@@ -11,8 +11,9 @@ const thumbler = require('../lib/thumbler');
 const DvdModel = require('./lib/DvdModel');
 const VideoModel = require('./lib/VideoModel');
 
-const videosLocation = path.join(__dirname, '../videos/');
-const thumbnailsLocation = path.join(__dirname, '../public/thumbnails/');
+const originalDvds = '/media/webadmin/media/the-choice';
+const videosLocation = '/media/webadmin/media/videos';
+const thumbnailsLocation = '/media/webadmin/media/thumbnails';
 
 function createThumbnail(original, neue) {
     return new Promise((res, rej) => {
@@ -57,7 +58,7 @@ async function saveDvds() {
     // Initialise DB
     await mongoose.connect(`mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster0.xdz53.mongodb.net/mongooseTv?retryWrites=true&w=majority`);
 
-    const dvds = Dvd.fetchAll();
+    const dvds = Dvd.fetchAll(originalDvds);
     let total = dvds.map(dvd => dvd.episodes.length)
         .reduce(function(a, b) { return a + b; }, 0);
     let progress = 0;

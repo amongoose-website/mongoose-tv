@@ -6,8 +6,6 @@ const Episode = require('./Episode');
 
 const generateUID = require('./generateUID');
 const subdirPath = (location, subdir) => path.join(location, subdir);
-const dvdsLocation = path.join(__dirname, '../../sample');
-
 
 class Dvd {
     constructor(data = {}) {
@@ -54,8 +52,8 @@ class Dvd {
         });
     }
 
-    static fetchAll() {
-        return Dvd.loadDvds(dvdsLocation)
+    static fetchAll(location) {
+        return Dvd.loadDvds(location)
     }
 
     static findDvd(id, dvds = []) {
