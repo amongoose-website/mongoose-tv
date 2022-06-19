@@ -33,3 +33,8 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
+
+# videos
+public/thumbnails
+videos
+sample
