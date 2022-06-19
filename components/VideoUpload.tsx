@@ -1,12 +1,16 @@
 import path from 'path'
-import React, { useState } from 'react'
+import ReactPlayer from 'react-player'
+import React, { useRef, useState } from 'react'
 import axios, { AxiosRequestConfig } from 'axios'
+
 
 import Icon from './Icon'
 import useSiteMetadata from './SiteMetadata'
+import { useRouter } from 'next/router'
 
 
 const VideoUpload = () => {
+    const router = useRouter()
     const [file, setFile] = useState<File | null>(null)
     const [progress, setProgress] = useState(0)
     const [error, setError] = useState(null)
@@ -17,6 +21,9 @@ const VideoUpload = () => {
         episodeNumber: '',
         isDvd: false
     })
+    
+    const [id, setId] = useState('')
+
     const [submitting, setSubmitting] = useState(false)
     const { domain } = useSiteMetadata()
 
@@ -36,8 +43,7 @@ const VideoUpload = () => {
 
         try {
             const response = await axios.post(`/api/upload`, data, config)
-            
-            console.log(response)
+            setId(response.data.id)
             
         } catch(error: any) {
             setError(error.message)
@@ -93,9 +99,7 @@ const VideoUpload = () => {
                                     <button type="button"
                                         className={`${progress < 100 ? 'hidden' : ''} w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm`}
                                         onClick={() => {
-                                            setSubmitting(false)
-                                            setProgress(0)
-                                            setFile(null)
+                                            router.push(`/watch?v=${id}`)
                                         }}>
                                         Done
                                     </button>
@@ -129,17 +133,32 @@ const VideoUpload = () => {
                         {file && <>
                             <div className='md:w-min min-w-fit my-4'>
                                 <span className='my-5'><b>Video To Upload:</b> {file.name}</span>
-                                <video className='rounded-lg' src={URL.createObjectURL(file)} muted controls
-                                    width="100%" />
+                                <ReactPlayer
+                                    url={URL.createObjectURL(file)}
+                                    className='group-first:rounded-lg'
+                                    width='100%'
+                                    height='auto'
+                                    muted
+                                    controls/>
                             </div>
+                            
+                            <label htmlFor="thumbnailTimestamp" className='text-base font-bold'>Thumbnail Timestamp
+                                <span className='text-red-500'>*</span>
+                            </label>
+                            <input type="text" name="thumbnailTimestamp" id="thumbnailTimestamp"
+                                defaultValue='00:00:20' required
+                                className='dark:bg-zinc-700 px-3 py-2 text-base rounded border-solid border-2 dark:border-zinc-600' />
+                            
                             <label htmlFor="title" className='text-base font-bold'>Title <span
                                     className='text-red-500'>*</span></label>
                             <input type="text" name="title" id="title"
                                 defaultValue={path.parse(file.name).name} required
                                 className='dark:bg-zinc-700 px-3 py-2 text-base rounded border-solid border-2 dark:border-zinc-600' />
+                            
                             <label htmlFor="description" className='text-base font-bold'>Description</label>
                             <textarea name="description" id="description" placeholder='Enter a description..'
                                 className='dark:bg-zinc-700 px-3 py-2 dark:text-zinc-200 text-base rounded border-solid border-2 dark:border-zinc-600 h-44' />
+                            
                             <label className='flex items-center'>
                                 <input 
                                 type="checkbox" 
@@ -148,6 +167,7 @@ const VideoUpload = () => {
                                 onChange={() => setFormData({ ...formData, isDvd: !formData.isDvd })}/> 
                                  This video is a part of a DVD set
                             </label>
+                            
                             {formData.isDvd && <>
                                 <div className="mb-3 flex flex-col gap-2">
                                     <label htmlFor="dvdNumber" className='text-base font-bold'>DVD Number<span

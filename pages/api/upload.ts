@@ -1,10 +1,12 @@
 import multer from 'multer'
 import nc from 'next-connect'
+import { withApiAuthRequired } from '@auth0/nextjs-auth0'
 
 import appConfig from '../../config'
+import Video from '../../models/Video'
+import thumbler from '../../lib/thumbler'
 import dbConnect from '../../lib/dbConnect'
 import generateUID from '../../lib/generateUID'
-import Video from '../../models/Video'
 
 const GB = 1000000000;
 const destination = appConfig.videosDirectory
@@ -34,10 +36,11 @@ const route = nc({
     },
 });
   
+
 route.use(upload.single('file'));
   
-route.post(async (req: any, res) => {
-    // Connect to MongoDB
+route.post(withApiAuthRequired(async (req: any, res) => {
+    // Connect to MongoDBy
     await dbConnect()
 
     if (!req.file) return res.status(400).end('Invalid file uploaded.')
@@ -56,13 +59,17 @@ route.post(async (req: any, res) => {
         })
     
         await savedVideo.save()
+        
         res.status(200).json(savedVideo);
+        
+        // Save thumbnail
+        thumbler.extract(`'${req.file.path}'`, `'${appConfig.thumbnailsDirectory}${req.id}.png'`, req.body.thumbnailTimestamp, '320x180')
+
     } catch (error) {
-        console.log(`Yes, ${error}`)
         res.status(500).json(error)
     }
     
-});
+}));
   
 
 export const config = {

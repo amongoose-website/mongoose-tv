@@ -1,4 +1,5 @@
 import nc from 'next-connect'
+import { withApiAuthRequired } from '@auth0/nextjs-auth0'
 
 import Video from '../../../models/Video';
 import dbConnect from '../../../lib/dbConnect';
@@ -14,7 +15,6 @@ const route = nc({
 });
 
 const handleDvd = async (req: any, res: any) => {
-    await dbConnect()
     const video = await Video.findOne({
         dvdNumber: req.query.d,
         episodeNumber: req.query.e
@@ -34,7 +34,6 @@ const handleDvd = async (req: any, res: any) => {
 }
 
 const handleVideo = async (req: any, res: any) => {
-    await dbConnect()
     const video = await Video.findOne({
         id: req.query.v
     })
@@ -52,12 +51,16 @@ const handleVideo = async (req: any, res: any) => {
     })
 }
 
-route.get((req: any, res: any) => {
-   // Handle Videos
+route.get(async (req: any, res: any) => {
+    await dbConnect()
+    // Handle Videos
     if (req.query.v) return handleVideo(req, res)
     
     // Handle DVDs    
     if (req.query.d && req.query.e) return handleDvd(req, res)
+
+    const videos = await Video.find().sort({ createdAt: -1 }).limit(20).exec()
+    res.status(200).json(videos)
 })
 
 export default route

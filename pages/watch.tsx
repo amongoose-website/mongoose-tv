@@ -30,7 +30,7 @@ const WatchPage = ({ query }: { query: any }) => {
     })
 
     return (
-        <Layout pageTitle='Test'>
+        <Layout pageTitle={video.title}>
             <div className="container mx-auto bg-white rounded dark:bg-zinc-800 dark:text-white">
                 <div className='flex flex-col bg-black items-center rounded-t'>
                     {loaded && 
@@ -40,7 +40,7 @@ const WatchPage = ({ query }: { query: any }) => {
                         </>
                     }
                 </div>
-                <div className='px-4 mt-3'>
+                <div className='px-4 pb-20 mt-3'>
                     <h1 className='text-xl font-medium mb-2'>{video.title}</h1>
                     <p className='text-sm font-base'>{video.description}</p>
                 </div>
