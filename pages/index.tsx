@@ -34,7 +34,7 @@ const Home = () => {
                         <Image 
                           width='320'
                           height='180'
-                          src={`/thumbnails/${video.id}.png`} 
+                          src={`${appConfig.publicThumbnails}${video.id}.png`} 
                           alt="" />
                       </div>
                     </a>

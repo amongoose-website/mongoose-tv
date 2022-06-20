@@ -5,7 +5,8 @@ let config = {
         domain: 'media.amongoose.com'
     },
     videosDirectory: '/media/webadmin/media/videos',
-    thumbnailsDirectory: '/media/webadmin/media/thumbnails'
+    thumbnailsDirectory: '/media/webadmin/media/thumbnails',
+    publicThumbnails: 'https://static.amongoose.com/thumbnails/'
 }
 
 if (process.env.NODE_ENV === 'development') {
