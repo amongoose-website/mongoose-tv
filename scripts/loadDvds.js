@@ -76,7 +76,7 @@ async function saveDvds() {
         .reduce(function(a, b) { return a + b; }, 0);
 
 
-    dvds.forEach(async dvd => {
+    for (let dvd of dvds) {
         let savedDvd = await DvdModel.findOne({dvdNumber: dvd.dvdNumber});
         if (!savedDvd) {
             savedDvd = new DvdModel({
@@ -85,15 +85,15 @@ async function saveDvds() {
             await savedDvd.save();
         }
 
-        dvd.episodes.forEach(async episode => {
+        for (let episode of dvd.episodes) {
             await saveEpisode(episode);
             progress++;
             if(progress === total) {
                 console.log('Complete');
             }
             return;
-        });
-    });
+        }
+    }
 }
 
 saveDvds();
