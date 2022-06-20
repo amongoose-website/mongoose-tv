@@ -63,7 +63,7 @@ route.post(withApiAuthRequired(async (req: any, res) => {
         res.status(200).json(savedVideo);
         
         // Save thumbnail
-        thumbler.extract(`'${req.file.path}'`, `'${appConfig.thumbnailsDirectory}${req.id}.png'`, req.body.thumbnailTimestamp, '320x180')
+        thumbler.extract(`${req.file.path}`, `${appConfig.thumbnailsDirectory}${req.id}.png`, req.body.thumbnailTimestamp, '320x180')
 
     } catch (error) {
         res.status(500).json(error)
