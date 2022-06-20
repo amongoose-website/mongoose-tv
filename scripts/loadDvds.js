@@ -44,6 +44,7 @@ async function saveEpisode(episode) {
             console.log(`Skipping E${episode.episodeNumber}/D${episode.dvdNumber}`);
             return res();
         }
+        return res();
         
         // Copy file
         let videoPath = videosLocation + episode.id;
