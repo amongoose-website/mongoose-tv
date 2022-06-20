@@ -20,7 +20,7 @@ const thumbnailsLocation = '/media/webadmin/media/thumbnails/';
 let total = 0;
 let progress = 0;
 
-const spinner = ora(`Progress: ${chalk.blue('0%')}`);
+const spinner = ora(`Progress: ${chalk.blue('0%')}`).start();
 
 function createThumbnail(original, neue) {
     return new Promise((res, rej) => {
