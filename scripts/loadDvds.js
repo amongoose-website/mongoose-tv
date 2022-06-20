@@ -1,5 +1,4 @@
 const fs = require('fs');
-const ora = require('ora');
 const path = require('path');
 const chalk = require('chalk');
 const mongoose = require('mongoose');
@@ -19,8 +18,6 @@ const thumbnailsLocation = '/media/webadmin/media/thumbnails/';
 
 let total = 0;
 let progress = 0;
-
-const spinner = ora(`Progress: ${chalk.blue('0%')}`).start();
 
 function createThumbnail(original, neue) {
     return new Promise((res, rej) => {
@@ -45,10 +42,10 @@ async function saveEpisode(episode) {
             episodeNumber: episode.episodeNumber,
             dvdNumber: episode.dvdNumber
         })) {
-            spinner.text = `Skipping E${episode.episodeNumber}/D${episode.dvdNumber}, Progress: ${chalk.blue(Math.round(progress/total * 100))}%`;
+            console.log(`Skipping E${episode.episodeNumber}/D${episode.dvdNumber}, Progress: ${chalk.blue(Math.round(progress/total * 100))}%`);
             return res(true);
         }
-        spinner.text = `Loading E${episode.episodeNumber}/D${episode.dvdNumber}, Progress: ${chalk.blue(Math.round(progress/total * 100))}%`
+        console.log(`Loading E${episode.episodeNumber}/D${episode.dvdNumber}, Progress: ${chalk.blue(Math.round(progress/total * 100))}%`)
 
         // Copy file
         let videoPath = videosLocation + episode.id;
@@ -89,11 +86,9 @@ async function saveDvds() {
         }
 
         dvd.episodes.forEach(async episode => {
-            spinner.text = `Loading E${episode.episodeNumber}/D${episode.dvdNumber}, Progress: ${Math.round(progress/total * 100)}%`
-            const skipped = await saveEpisode(episode);
+            await saveEpisode(episode);
             progress++;
             if(progress === total) {
-                spinner.stop();
                 console.log('Complete');
             }
             return;
