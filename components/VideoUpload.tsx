@@ -8,6 +8,17 @@ import Icon from './Icon'
 import useSiteMetadata from './SiteMetadata'
 import { useRouter } from 'next/router'
 
+const PreviewVideo = React.memo(function PreviewVideo({file}: any) {
+    return (
+        <ReactPlayer
+            url={file}
+            className='group-first:rounded-lg'
+            width='100%'
+            height='auto'
+            muted
+            controls/>
+        )
+    })
 
 const VideoUpload = () => {
     const router = useRouter()
@@ -133,13 +144,7 @@ const VideoUpload = () => {
                         {file && <>
                             <div className='md:w-min min-w-fit my-4'>
                                 <span className='my-5'><b>Video To Upload:</b> {file.name}</span>
-                                <ReactPlayer
-                                    url={URL.createObjectURL(file)}
-                                    className='group-first:rounded-lg'
-                                    width='100%'
-                                    height='auto'
-                                    muted
-                                    controls/>
+                                <PreviewVideo file={URL.createObjectURL(file)}/>
                             </div>
                             
                             <label htmlFor="thumbnailTimestamp" className='text-base font-bold'>Thumbnail Timestamp
