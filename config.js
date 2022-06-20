@@ -2,7 +2,7 @@ let config = {
     siteMetadata: {
         title: 'A. Mongoose TV',
         description: 'Watch the latest documentaries and videos on the Choice.',
-        domain: 'media.amongoose.com'
+        domain: 'tv.amongoose.com'
     },
     videosDirectory: '/media/webadmin/media/videos/',
     thumbnailsDirectory: '/media/webadmin/media/thumbnails/',
