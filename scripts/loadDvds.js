@@ -15,6 +15,9 @@ const originalDvds = '/media/webadmin/media/the-choice/';
 const videosLocation = '/media/webadmin/media/videos/';
 const thumbnailsLocation = '/media/webadmin/media/thumbnails/';
 
+let total = 0;
+let progress = 0;
+
 function createThumbnail(original, neue) {
     return new Promise((res, rej) => {
         thumbler.extract(original, neue, '00:00:20', '320x180', err => {
@@ -34,6 +37,14 @@ function copyFile(original, neue) {
 
 async function saveEpisode(episode) {
     return new Promise(async (res, _) => {
+        if (VideoModel.exists({
+            episodeNumber: episode.episodeNumber,
+            dvdNumber: episode.dvdNumber
+        })) {
+            console.log(`Skipping E${episode.episodeNumber}/D${episode.dvdNumber}`);
+            return res();
+        }
+        
         // Copy file
         let videoPath = videosLocation + episode.id;
         await copyFile(episode.path, videoPath);
@@ -41,7 +52,7 @@ async function saveEpisode(episode) {
         let thumbPath = `${thumbnailsLocation}${episode.id}.png`;
         await createThumbnail(videoPath, thumbPath);
 
-        const newVideo = new VideoModel({
+        let newVideo = new VideoModel({
             ...episode,
             filename: episode.id,
             originalFileName: episode.filename,
@@ -59,9 +70,9 @@ async function saveDvds() {
     await mongoose.connect(`mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster0.xdz53.mongodb.net/mongooseTv?retryWrites=true&w=majority`);
 
     const dvds = Dvd.fetchAll(originalDvds);
-    let total = dvds.map(dvd => dvd.episodes.length)
+    total = dvds.map(dvd => dvd.episodes.length)
         .reduce(function(a, b) { return a + b; }, 0);
-    let progress = 0;
+    
 
     dvds.forEach(async dvd => {
         let savedDvd = await DvdModel.findOne({dvdNumber: dvd.dvdNumber});
@@ -75,7 +86,7 @@ async function saveDvds() {
         dvd.episodes.forEach(async episode => {
             await saveEpisode(episode);
             progress++;
-            console.log(`Progress: ${Math.round(progress/total * 100)}%`)
+            console.log(`Saved E${episode.episodeNumber}/D${episode.dvdNumber}, Progress: ${Math.round(progress/total * 100)}%`)
         })
     })
 }
