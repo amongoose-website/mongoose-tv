@@ -1,5 +1,7 @@
 const fs = require('fs');
+const ora = require('ora');
 const path = require('path');
+const chalk = require('chalk');
 const mongoose = require('mongoose');
 
 require('dotenv').config({
@@ -17,6 +19,8 @@ const thumbnailsLocation = '/media/webadmin/media/thumbnails/';
 
 let total = 0;
 let progress = 0;
+
+const spinner = ora(`Progress: ${chalk.blue('0%')}`).start();
 
 function createThumbnail(original, neue) {
     return new Promise((res, rej) => {
@@ -41,15 +45,15 @@ async function saveEpisode(episode) {
             episodeNumber: episode.episodeNumber,
             dvdNumber: episode.dvdNumber
         })) {
-            console.log(`Skipping E${episode.episodeNumber}/D${episode.dvdNumber}`);
-            return res();
+            spinner.text = `Skipping E${episode.episodeNumber}/D${episode.dvdNumber}, Progress: ${chalk.blue(Math.round(progress/total * 100))}%`;
+            return res(true);
         }
-        return res();
-        
+        spinner.text = `Loading E${episode.episodeNumber}/D${episode.dvdNumber}, Progress: ${chalk.blue(Math.round(progress/total * 100))}%`
+
         // Copy file
         let videoPath = videosLocation + episode.id;
         await copyFile(episode.path, videoPath);
-        
+
         let thumbPath = `${thumbnailsLocation}${episode.id}.png`;
         await createThumbnail(videoPath, thumbPath);
 
@@ -73,7 +77,7 @@ async function saveDvds() {
     const dvds = Dvd.fetchAll(originalDvds);
     total = dvds.map(dvd => dvd.episodes.length)
         .reduce(function(a, b) { return a + b; }, 0);
-    
+
 
     dvds.forEach(async dvd => {
         let savedDvd = await DvdModel.findOne({dvdNumber: dvd.dvdNumber});
@@ -85,11 +89,16 @@ async function saveDvds() {
         }
 
         dvd.episodes.forEach(async episode => {
-            await saveEpisode(episode);
+            spinner.text = `Loading E${episode.episodeNumber}/D${episode.dvdNumber}, Progress: ${Math.round(progress/total * 100)}%`
+            const skipped = await saveEpisode(episode);
             progress++;
-            console.log(`Saved E${episode.episodeNumber}/D${episode.dvdNumber}, Progress: ${Math.round(progress/total * 100)}%`)
-        })
-    })
+            if(progress === total) {
+                spinner.stop();
+                console.log('Complete');
+            }
+            return;
+        });
+    });
 }
 
 saveDvds();
