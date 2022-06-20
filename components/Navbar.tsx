@@ -7,14 +7,14 @@ import { useUser } from '@auth0/nextjs-auth0'
 import Icon from './Icon'
 import useSiteMetadata from './SiteMetadata'
 
-const uppercase = (old: string) => {
-    return old.split(' ').map(x => {
+const uppercase = (old?: string | null) => {
+    return old?.split(' ').map(x => {
         return x.charAt(0).toUpperCase() + x.substring(1)
     }).join(' ')
 }
 
 
-function MenuLink({href, text, children, type}: {href: string, text: string, children: any | null, type: string}) {
+function MenuLink({href, text, children, type}: {href: string, text?: string, children?: any, type?: string}) {
     const router = useRouter()
     if (!type) type = 'link'
 
@@ -129,9 +129,11 @@ const Navbar = () => {
                             <div className={`${userMenu ? 'md:visible' : ''} flex flex-col invisible absolute px-5 right-28 top-0 z-10 bg-white w-72 py-5 border-solid border-zinc-200 border`}>
                                 <ul>
                                     <div className='flex flex-row items-center border-b pb-4 mb-4'>
-                                        <Image className='rounded-full' src={user.picture} width={50} height={50} alt='avatar'/>
+                                        {
+                                            user.picture && <Image className='rounded-full' src={user.picture} width={50} height={50} alt='avatar'/>
+                                        }
                                         <div className='ml-5'>
-                                            <span className='text-lg whitespace-pre-wrap'>{uppercase(user.nickname)}</span>
+                                            <span className='text-lg whitespace-pre-wrap'>{uppercase(user?.nickname)}</span>
                                         </div>
                                     </div>
                                     { USER_MENU.map((menuItem, i) => {
@@ -144,9 +146,11 @@ const Navbar = () => {
                                     })}
                                 </ul>
                             </div>
-                            <button onClick={() => setUserMenu(!userMenu)}>
-                                <Image className='rounded-full' src={user.picture} width={40} height={40}/>
-                            </button>
+                            {user.picture &&
+                                <button onClick={() => setUserMenu(!userMenu)}>
+                                    <Image className='rounded-full' src={user.picture} width={40} height={40} alt='avatar'/>
+                                </button>
+                            }
                         </>}
                         {!user &&
                             <MenuLink href={'/api/auth/login'}>
