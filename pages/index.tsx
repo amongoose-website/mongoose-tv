@@ -40,10 +40,12 @@ const Home = () => {
                     </a>
                     <div className="py-2">
                       <a href={`/watch?v=${video.id}`}>
-                        <div className='bg-zinc-200 dark:bg-zinc-700 w-min px-2.5 py-0.5 rounded text-xs my-1'>
-                          <span className=' whitespace-nowrap'>DVD • {video.dvdNumber}</span>
-                          <span className=' whitespace-nowrap ml-3'>Episode • {video.episodeNumber}</span>
-                        </div>
+                        { video.isDvd &&
+                          <div className='bg-zinc-200 dark:bg-zinc-700 w-min px-2.5 py-0.5 rounded text-xs my-1'>
+                            <span className=' whitespace-nowrap'>DVD • {video.dvdNumber}</span>
+                            <span className=' whitespace-nowrap ml-3'>Episode • {video.episodeNumber}</span>
+                          </div>
+                        }
                         <h5 className="text-base font-medium tracking-tight text-zinc-900 dark:text-white">
                           {video.title}
                         </h5>
