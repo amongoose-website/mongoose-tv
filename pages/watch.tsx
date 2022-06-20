@@ -11,7 +11,7 @@ const WatchPage = ({ query }: { query: any }) => {
 
     // Check video exists
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    const [video, setVideo] = useState({})
+    const [video, setVideo] = useState<any>({})
     // eslint-disable-next-line react-hooks/rules-of-hooks
     const [loaded, setLoaded] = useState(false)
     

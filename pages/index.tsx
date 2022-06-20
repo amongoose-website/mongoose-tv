@@ -6,13 +6,13 @@ import Layout from '../components/Layout'
 import Image from 'next/image'
 
 const Home = () => {
-  let loaded = false
-  const [videos, setVideos] = useState([])
+  const [loaded, setLoaded] = useState(false)
+  const [videos, setVideos] = useState<any[]>([])
   
   useEffect(() => {
     const getVideos = async () => {
       const { data } = await axios.get('/api/videos/data')
-      loaded = true
+      setLoaded(true)
       setVideos(data)
     }
     if (!loaded) getVideos();
@@ -25,7 +25,7 @@ const Home = () => {
           <h1 className='text-3xl pb-2'>All Videos</h1>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-2">
             {videos.length > 0 && <>
-              { videos.map((video, i) => { 
+              { videos.map((video: any, i) => { 
                 return (
                 <div key={i}>
                   <div className="max-w-sm inline-block">
