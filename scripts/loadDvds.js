@@ -11,9 +11,9 @@ const thumbler = require('../lib/thumbler');
 const DvdModel = require('./lib/DvdModel');
 const VideoModel = require('./lib/VideoModel');
 
-const originalDvds = '/media/webadmin/media/the-choice';
-const videosLocation = '/media/webadmin/media/videos';
-const thumbnailsLocation = '/media/webadmin/media/thumbnails';
+const originalDvds = '/media/webadmin/media/the-choice/';
+const videosLocation = '/media/webadmin/media/videos/';
+const thumbnailsLocation = '/media/webadmin/media/thumbnails/';
 
 function createThumbnail(original, neue) {
     return new Promise((res, rej) => {
