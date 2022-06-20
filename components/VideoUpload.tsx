@@ -54,6 +54,7 @@ const VideoUpload = () => {
 
         try {
             const response = await axios.post(`/api/upload`, data, config)
+            console.log(response)
             setId(response.data.id)
             
         } catch(error: any) {
