@@ -91,7 +91,6 @@ async function saveDvds() {
             if(progress === total) {
                 console.log('Complete');
             }
-            return;
         }
     }
 }
