@@ -37,7 +37,7 @@ function copyFile(original, neue) {
 
 async function saveEpisode(episode) {
     return new Promise(async (res, _) => {
-        if (VideoModel.exists({
+        if (await VideoModel.exists({
             episodeNumber: episode.episodeNumber,
             dvdNumber: episode.dvdNumber
         })) {
