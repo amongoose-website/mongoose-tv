@@ -5,7 +5,10 @@ import { useRouter } from 'next/router'
 import { useUser } from '@auth0/nextjs-auth0'
 
 import Icon from './Icon'
+import appConfig from '../config'
 import useSiteMetadata from './SiteMetadata'
+
+const { navbarItems } = appConfig
 
 const uppercase = (old?: string | null) => {
     return old?.split(' ').map(x => {
@@ -43,10 +46,6 @@ function MenuLink({href, text, children, type}: {href: string, text?: string, ch
     )
 }
 
-const USER_MENU = [
-    {text: 'Upload', href: '/upload', icon: 'file_upload', type: 'link'},
-    {text: 'Logout', href: '/api/auth/logout', icon: 'logout', type: 'a'},
-]
 
 const Navbar = () => {
     const [menuHidden, setMenuHidden] = useState(true)
@@ -74,9 +73,11 @@ const Navbar = () => {
                                     clipRule="evenodd"></path>
                             </svg>
                         </div>
-                        <input type="text" id="search-navbar"
-                            className="block p-2 pl-10 w-full text-zinc-900 bg-zinc-50 rounded-lg border border-zinc-300 sm:text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:placeholder-zinc-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                            placeholder="Search..."/>
+                        <form method='get' action='/results'>
+                            <input type="text" id="search-navbar" name='query'
+                                className="block p-2 pl-10 w-full text-zinc-900 bg-zinc-50 rounded-lg border border-zinc-300 sm:text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:placeholder-zinc-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                placeholder="Search..."/>
+                        </form>
                     </div>
                     <button type="button" data-collapse-toggle="mobile-menu-3" aria-controls="mobile-menu-3"
                         aria-expanded="false"
@@ -122,11 +123,12 @@ const Navbar = () => {
                         {/* <MenuLink href='/upload' text='Upload'/> */}
                         {user && <>
                             <div className='md:hidden'>
-                                { USER_MENU.map((menuItem, i) => {
+                                { navbarItems.map((menuItem, i) => {
                                     return <MenuLink type={menuItem.type} key={i} text={menuItem.text} href={menuItem.href}/>
                                 })}
                             </div>
-                            <div className={`${userMenu ? 'md:visible' : ''} flex flex-col invisible absolute px-5 right-28 top-0 z-10 bg-white w-72 py-5 border-solid border-zinc-200 border`}>
+                            <div className={`${userMenu ? 'md:visible' : ''} rounded flex flex-col invisible absolute px-5 right-0 z-10 bg-white w-72 py-5 border-solid border-zinc-200 border`}
+                                style={{top: '85.5px'}}>
                                 <ul>
                                     <div className='flex flex-row items-center border-b pb-4 mb-4'>
                                         {
@@ -136,7 +138,7 @@ const Navbar = () => {
                                             <span className='text-lg whitespace-pre-wrap'>{uppercase(user?.nickname)}</span>
                                         </div>
                                     </div>
-                                    { USER_MENU.map((menuItem, i) => {
+                                    { navbarItems.map((menuItem, i) => {
                                         return <MenuLink key={i} href={menuItem.href} type={menuItem.type}>
                                             <div className="flex flex-row items-center mb-2" onClick={() => setUserMenu(false)}>
                                                 <Icon name={menuItem.icon} className='mr-2'/>

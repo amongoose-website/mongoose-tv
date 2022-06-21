@@ -6,7 +6,12 @@ let config = {
     },
     videosDirectory: '/media/webadmin/media/videos/',
     thumbnailsDirectory: '/media/webadmin/media/thumbnails/',
-    publicThumbnails: 'https://static.amongoose.com/thumbnails/'
+    publicThumbnails: 'https://static.amongoose.com/thumbnails/',
+    navbarItems: [
+        {text: 'Upload', href: '/videos/upload', icon: 'file_upload', type: 'link'},
+        {text: 'Manage Videos', href: '/videos/manage', icon: 'video_library', type: 'link'},
+        {text: 'Logout', href: '/api/auth/logout', icon: 'logout', type: 'a'},
+    ]
 }
 
 if (process.env.NODE_ENV === 'development') {
