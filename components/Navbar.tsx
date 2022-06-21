@@ -127,7 +127,7 @@ const Navbar = () => {
                                     return <MenuLink type={menuItem.type} key={i} text={menuItem.text} href={menuItem.href}/>
                                 })}
                             </div>
-                            <div className={`${userMenu ? 'md:visible' : ''} rounded flex flex-col invisible absolute px-5 right-0 z-10 bg-white w-72 py-5 border-solid border-zinc-200 border`}
+                            <div className={`${userMenu ? 'md:visible' : ''} rounded flex flex-col invisible absolute px-5 right-0 z-10 bg-white dark:bg-zinc-800 w-72 py-5 border-solid dark:border-zinc-700 dark:text-white border-zinc-200 border`}
                                 style={{top: '85.5px'}}>
                                 <ul>
                                     <div className='flex flex-row items-center border-b pb-4 mb-4'>
