@@ -1,3 +1,3 @@
-export default function Icon({ name, className }: any) {
-    return <span className={`material-icons ${className}`}>{name}</span>
+export default function Icon(props: any) {
+    return <span {...props} className={`material-icons ${props.className ? props.className : ''}`}>{props.name}</span>
 }
