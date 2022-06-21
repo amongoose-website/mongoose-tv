@@ -1,9 +1,11 @@
+import Redis from 'ioredis'
 import nc from 'next-connect'
-import { withApiAuthRequired } from '@auth0/nextjs-auth0'
 
 import Dvd from '../../../models/Dvd'
 import Video from '../../../models/Video'
 import dbConnect from '../../../lib/dbConnect'
+
+const redis = new Redis(process.env.REDIS_URL);
 
 const route = nc({
     onError(error, _, res: any) {
@@ -16,12 +18,20 @@ const route = nc({
 })
 
 route.get(async (req: any, res: any) => {
+    let cache: string | null = await redis.get('allList')
+
+    if (cache) {
+        cache = JSON.parse(cache)
+        res.status(200).json(cache)
+    }
+
     await dbConnect()
     
-    const query = await Dvd.find().sort({ dvdNumber: 1 }).exec()
+    const documentaries = await Video.find({ isDvd: false })
+    const dvdsQuery = await Dvd.find().sort({ dvdNumber: 1 }).exec()
     let dvds: Array<any> = [];
 
-    for (let dvd of query) {
+    for (let dvd of dvdsQuery) {
         let firstEpisode = (await Video.find({dvdNumber: dvd.dvdNumber})
             .sort({ episodeNumber: 1 })
             .limit(1)
@@ -31,8 +41,13 @@ route.get(async (req: any, res: any) => {
         dvds.push({...dvd._doc, firstEpisode, episodeCount});
     }
 
-    console.log(dvds)
-    res.status(200).json(dvds)
+    const result = {
+        dvds,
+        documentaries
+    }
+
+    redis.set('allList', JSON.stringify(result));
+    if (!cache) return res.status(200).json(result)
 })
 
 export default route
