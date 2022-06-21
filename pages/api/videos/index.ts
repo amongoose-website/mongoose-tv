@@ -9,7 +9,7 @@ const VIDEOS_DIRECTORY = appConfig.videosDirectory
 export default function handler(req: any, res: any) {
   let range = req.headers.range
   if (range == 'bytes=0-1') {
-    range = 'bytes=0='
+    range = 'bytes=0-'
   }
 
   if (!range) return res.status(400).end('Range must be provided')
