@@ -9,7 +9,7 @@ let config = {
     publicThumbnails: 'https://static.amongoose.com/thumbnails/',
     navbarItems: [
         {text: 'Upload', href: '/videos/upload', icon: 'file_upload', type: 'link'},
-        {text: 'Manage Videos', href: '/videos/manage', icon: 'video_library', type: 'link'},
+        {text: 'Manage Videos', href: '/videos/manage?page=1', icon: 'video_library', type: 'link'},
         {text: 'Logout', href: '/api/auth/logout', icon: 'logout', type: 'a'},
     ]
 }
