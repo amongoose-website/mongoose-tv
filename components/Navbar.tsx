@@ -60,7 +60,7 @@ const Navbar = () => {
             <div className="container flex md:gap-10 flex-wrap justify-between items-center mx-auto">
                 <a href={`/`} className="flex items-center dark:text-white flex-grow-0">
                     <div className='flex items-center text-red-600'>
-                        <Icon name='smart_display'/>
+                        <Image width={25} height={25} src={'/logo.png'}/>
                     </div>
                     <span className="mx-2 self-center text-xl font-medium whitespace-nowrap oswald uppercase">{siteMetadata.title}</span>
                 </a>
