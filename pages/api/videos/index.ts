@@ -7,7 +7,11 @@ const CHUNK_SIZE_IN_BYTES = 1000000
 const VIDEOS_DIRECTORY = appConfig.videosDirectory
 
 export default function handler(req: any, res: any) {
-  const range = req.headers.range
+  let range = req.headers.range
+  if (range == 'bytes=0-1') {
+    range = 'bytes=0='
+  }
+
   if (!range) return res.status(400).end('Range must be provided')
 
   const videoId = req.query.v

@@ -24,7 +24,7 @@ const dvdSchema = new mongoose.Schema({
     },
 }, {
     timestamps: true
-});
+})
 
 const Dvd = mongoose.models.Dvd || mongoose.model('Dvd', dvdSchema)
 

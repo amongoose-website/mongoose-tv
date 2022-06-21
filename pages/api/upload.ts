@@ -8,7 +8,7 @@ import thumbler from '../../lib/thumbler'
 import dbConnect from '../../lib/dbConnect'
 import generateUID from '../../lib/generateUID'
 
-const GB = 1000000000;
+const GB = 1000000000
 const destination = appConfig.videosDirectory
 
 const upload = multer({
@@ -23,21 +23,21 @@ const upload = multer({
     fileFilter: (_, file, cb) => {
         return cb(null, file.mimetype === 'video/mp4')
     }
-});
+})
 
 
 const route = nc({
     onError(error, _, res: any) {
-        res.status(501).json({ error: `Sorry something Happened! ${error.message}` });
+        res.status(501).json({ error: `Sorry something Happened! ${error.message}` })
     },
 
     onNoMatch(req, res) {
-        res.status(405).json({ error: `Method '${req.method}' Not Allowed` });
+        res.status(405).json({ error: `Method '${req.method}' Not Allowed` })
     },
-});
+})
   
 
-route.use(upload.single('file'));
+route.use(upload.single('file'))
   
 route.post(withApiAuthRequired(async (req: any, res) => {
     // Connect to MongoDBy
@@ -60,7 +60,7 @@ route.post(withApiAuthRequired(async (req: any, res) => {
     
         await savedVideo.save()
         
-        res.status(200).json(savedVideo);
+        res.status(200).json(savedVideo)
         
         // Save thumbnail
         thumbler.extract(`${appConfig.videosDirectory}${req.id}`, `${appConfig.thumbnailsDirectory}${req.id}.png`, req.body.thumbnailTimestamp, '320x180')
@@ -69,13 +69,13 @@ route.post(withApiAuthRequired(async (req: any, res) => {
         res.status(500).json(error)
     }
     
-}));
+}))
   
 
 export const config = {
     api: {
         bodyParser: false
     },
-};
+}
 
-export default route;
+export default route

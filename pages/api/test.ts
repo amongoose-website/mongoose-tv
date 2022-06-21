@@ -8,7 +8,7 @@ import dbConnect from '../../lib/dbConnect'
 import generateUID from '../../lib/generateUID'
 import Video from '../../models/Video'
 
-const GB = 1000000000;
+const GB = 1000000000
 const destination = appConfig.videosDirectory
 
 const upload = multer({
@@ -23,20 +23,20 @@ const upload = multer({
     fileFilter: (_, file, cb) => {
         return cb(null, file.mimetype === 'video/mp4')
     }
-});
+})
 
 
 const apiRoute = nc({
     onError(error, _, res: any) {
-        res.status(501).json({ error: `Sorry something Happened! ${error.message}` });
+        res.status(501).json({ error: `Sorry something Happened! ${error.message}` })
     },
 
     onNoMatch(req, res) {
-        res.status(405).json({ error: `Method '${req.method}' Not Allowed` });
+        res.status(405).json({ error: `Method '${req.method}' Not Allowed` })
     },
-});
+})
   
-apiRoute.use(upload.single('file'));
+apiRoute.use(upload.single('file'))
   
 apiRoute.post(async (req: any, res) => {
     // Connect to MongoDB
@@ -50,14 +50,14 @@ apiRoute.post(async (req: any, res) => {
         
     })
     
-    res.status(200).json({});
-});
+    res.status(200).json({})
+})
   
 
 export const config = {
     api: {
         bodyParser: false
     },
-};
+}
 
-export default apiRoute;
+export default apiRoute
