@@ -1,7 +1,7 @@
 import { withPageAuthRequired } from '@auth0/nextjs-auth0'
 
-import Layout from '../components/Layout'
-import VideoUpload from '../components/VideoUpload'
+import Layout from '../../components/Layout'
+import VideoUpload from '../../components/VideoUpload'
 
 export default withPageAuthRequired(function UploadPage({user}) {
     return (
