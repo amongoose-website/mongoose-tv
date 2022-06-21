@@ -5,8 +5,6 @@ import Dvd from '../../../models/Dvd'
 import Video from '../../../models/Video'
 import dbConnect from '../../../lib/dbConnect'
 
-const redis = new Redis(process.env.REDIS_URL);
-
 const route = nc({
     onError(error, _, res: any) {
         res.status(501).json({ error: `Sorry something Happened! ${error.message}` })
@@ -18,6 +16,8 @@ const route = nc({
 })
 
 route.get(async (req: any, res: any) => {
+    if (!process.env.REDIS_URL) return res.status(500).json('Redis URL not provided')
+    const redis = new Redis(process.env.REDIS_URL);
     let cache: string | null = await redis.get('allDvds')
 
     if (cache) {

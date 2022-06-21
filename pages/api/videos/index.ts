@@ -4,8 +4,6 @@ import nc from 'next-connect'
 import Video from '../../../models/Video';
 import dbConnect from '../../../lib/dbConnect';
 
-const redis = new Redis(process.env.REDIS_URL);
-
 const route = nc({
     onError(error, _, res: any) {
         res.status(501).json({ error: `Sorry something Happened! ${error.message}` });
@@ -55,6 +53,8 @@ const handleVideo = async (req: any, res: any) => {
 
 async function handleCustomQuery(req: any, res: any) {
     let { limit, skip } = req.query
+    if (!process.env.REDIS_URL) return res.status(500).json('Redis URL not provided')
+    const redis = new Redis(process.env.REDIS_URL);
 
     // Is documentary?
     let onlyDocumentaries = req.query.isDvd == 'false' ? true : false
@@ -90,6 +90,9 @@ route.get(async (req: any, res: any) => {
 
     // Handle custom query
     if (req.query.limit || req.query.skip) return handleCustomQuery(req, res)
+
+    if (!process.env.REDIS_URL) return res.status(500).json('Redis URL not provided')
+    const redis = new Redis(process.env.REDIS_URL);
 
     let filter: any = {}
     let results: any = []
