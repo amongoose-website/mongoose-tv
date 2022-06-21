@@ -35,6 +35,6 @@ yarn-error.log*
 *.tsbuildinfo
 
 # videos
-public/thumbnails
-videos
-sample
+./public/thumbnails
+./videos
+./sample
