@@ -2,7 +2,7 @@ function VideoPlayer({ id }: { id: string }) {
     return (
         <video
         className='outline-none'
-         src={`/api/videos?v=${id}`}
+         src={`/api/videos/stream?v=${id}`}
          width='800'
          height='auto'
          controls

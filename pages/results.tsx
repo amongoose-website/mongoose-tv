@@ -14,7 +14,7 @@ const Results: NextPage = () => {
     useEffect(() => {
         async function search() {
             const {data} = await axios.get(`/api/videos/search?q=${query}`)
-            if (data.results.length > 0) setResults(data.results)
+            if (data.videos.length > 0) setResults(data.videos)
         }
         if (results.length <= 0) search();
     })

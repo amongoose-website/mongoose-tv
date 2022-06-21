@@ -18,7 +18,7 @@ const WatchPage = ({ query }: { query: any }) => {
     // eslint-disable-next-line react-hooks/rules-of-hooks
     useEffect(() => {
         const getVideo = async () => {
-            const { data } = await axios.get('/api/videos/data', {params: query})
+            const { data } = await axios.get('/api/videos', {params: query})
 
             if (data.video && Object.keys(video).length <= 0) {
                 setVideo(data.video)
