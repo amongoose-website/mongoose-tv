@@ -10,7 +10,7 @@ export const DvdOverlay = ({count}: {count: string | number}) => {
 		  <Icon name='album'/>
 		  <span>{`${count > 1 ? `${count} Episodes` : `${count} Episode`}`}</span>
 		</div>
-		<span className='w-full h-full bg-black absolute z-10 opacity-50'></span>
+		<span className='w-full h-full bg-black absolute z-10 opacity-50 rounded'></span>
 	  </div>
 	)
   }
@@ -22,10 +22,11 @@ export const DvdThumbnail = (props: any) => {
 		<div className='px-6 sm:px-20 md:px-10 lg:px-5 w-full'>
 		  <div className="w-full inline-block">
 			<a className='w-full' href={`/watch?v=${dvd.id}`}>
-			  <div className='relative aspect-video w-full h-auto'>
+			  <div className='relative aspect-video w-full h-auto rounded'>
 				{ dvd && <DvdOverlay count={dvd.episodeCount}/> }
 				<Image 
 				  layout='fill'
+				  className='rounded'
 				  src={`${appConfig.publicThumbnails}${dvd.firstEpisode.id}.png`} 
 				  alt="" />
 			  </div>
@@ -39,6 +40,9 @@ export const DvdThumbnail = (props: any) => {
 				  </div>
 				}
 				<h5 className="text-base font-medium tracking-tight text-zinc-900 dark:text-white">
+				  <div className='bg-zinc-200 dark:bg-zinc-700 w-min px-2.5 py-0.5 rounded text-xs my-1'>
+					<span className=' whitespace-nowrap'>DVD #{dvd.dvdNumber}</span>
+				  </div>
 				  {dvd.title}
 				</h5>
 			  </a>
@@ -57,6 +61,7 @@ const VideoThumbnail = (props: any) => {
 			  <div className='relative aspect-video w-full h-auto'>
 				<Image 
 				  layout='fill'
+				  className='rounded'
 				  src={`${appConfig.publicThumbnails}${video.id}.png`} 
 				  alt="" />
 			  </div>
