@@ -1,41 +1,120 @@
-import fs from 'fs'
-import path from 'path'
+import Redis from 'ioredis'
+import nc from 'next-connect'
 
-import appConfig from '../../../config'
+import Video from '../../../models/Video';
+import dbConnect from '../../../lib/dbConnect';
 
-const VIDEOS_DIRECTORY = appConfig.videosDirectory
+const redis = new Redis(process.env.REDIS_URL);
 
-export default function handler(req: any, res: any) {
-  let range = req.headers.range
+const route = nc({
+    onError(error, _, res: any) {
+        res.status(501).json({ error: `Sorry something Happened! ${error.message}` });
+    },
 
-  if (!range) return res.status(400).end('Range must be provided')
+    onNoMatch(req, res) {
+        res.status(405).json({ error: `Method '${req.method}' Not Allowed` });
+    },
+});
 
-  const videoId = req.query.v
-  const videoPath = path.join(VIDEOS_DIRECTORY, videoId)
-
-  if (!fs.existsSync(videoPath)) return res.status(404)
-  const videoSizeInBytes = fs.statSync(videoPath).size
-
-  const parts = range.replace(/bytes=/, "").split("-");
-  const chunkStart = parseInt(parts[0], 10);
-  const chunkEnd = parts[1]
-      ? parseInt(parts[1], 10)
-      : videoSizeInBytes-1;
-
-  const contentLength = chunkEnd - chunkStart + 1
-
-  const headers = {
-    'Content-Range': `bytes ${chunkStart}-${chunkEnd}/${videoSizeInBytes}`,
-    'Accept-Ranges': 'bytes',
-    'Content-Length': contentLength,
-    'Content-Type': 'video/mp4'
-  }
-
-  res.writeHead(206, headers)
-  const videoStream = fs.createReadStream(videoPath, {
-    start: chunkStart,
-    end: chunkEnd
-  })
-
-  videoStream.pipe(res)
+const handleDvd = async (req: any, res: any) => {
+    const video = await Video.findOne({
+        dvdNumber: req.query.d,
+        episodeNumber: req.query.e
+    })
+    
+    if (!video) return res.status(404).json({error: 'DVD not found'})
+    return res.status(200).json({
+        video: {
+            id: video.id,
+            title: video.title,
+            description: video.description,
+            isDvd: true,
+            dvdNumber: video.dvdNumber,
+            episodeNumber: video.episodeNumber,
+        }
+    })
 }
+
+const handleVideo = async (req: any, res: any) => {
+    const video = await Video.findOne({
+        id: req.query.v
+    })
+    
+    if (!video) return res.status(404).json({error: 'Video not found'})
+    return res.status(200).json({
+        video: {
+            id: video.id,
+            title: video.title,
+            description: video.description,
+            isDvd: false,
+            dvdNumber: video.dvdNumber,
+            episodeNumber: video.episodeNumber
+        }
+    })
+}
+
+async function handleCustomQuery(req: any, res: any) {
+    let { limit, skip } = req.query
+
+    // Is documentary?
+    let onlyDocumentaries = req.query.isDvd == 'false' ? true : false
+    // If searching
+    let filter = onlyDocumentaries ? { isDvd: false } : {}
+    let total = onlyDocumentaries
+        ? Number(await redis.get('totalDocumentaries'))
+        : Number(await redis.get('totalVideos'))
+    if (!total) {
+        total = await Video.estimatedDocumentCount()
+        redis.set(onlyDocumentaries ? 'totalDocumentaries' : 'totalVideos', total)
+    }
+
+    let videos = await Video.find(filter)
+        .sort({ dvdNumber: 1 })
+        .limit(limit ? limit : 20)
+        .skip(skip != undefined ? skip : 0)
+        .exec()
+
+    res.status(200).json({
+        videos,
+        total
+    })
+}
+
+route.get(async (req: any, res: any) => {
+    await dbConnect()
+    // Handle Videos
+    if (req.query.v) return handleVideo(req, res)
+    
+    // Handle DVDs    
+    if (req.query.d && req.query.e) return handleDvd(req, res)
+
+    // Handle custom query
+    if (req.query.limit || req.query.skip) return handleCustomQuery(req, res)
+
+    let filter: any = {}
+    let results: any = []
+    let cacheKey: string | null = null
+
+    if (req.query.isDvd === 'false') {
+        filter.isDvd = false
+        cacheKey = 'documentaries'
+    } else {
+        cacheKey = 'allVideos'
+    }
+
+    let cache: string | null = await redis.get(cacheKey)
+    if (cache) {
+        results = JSON.parse(cache)
+        res.status(200).json(results)
+    }
+
+    results = await Video.find(filter)
+        .sort({ createdAt: -1 })
+        .exec()
+
+    await redis.set(cacheKey, JSON.stringify(results))
+    
+    if (!cache) res.status(200).json(results)
+})
+
+export default route

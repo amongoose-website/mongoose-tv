@@ -16,12 +16,12 @@ const route = nc({
 route.get(async (req: any, res: any) => {
     if (!MONGO_URI) return
     let { q: query } = req.query
-    let results: any = []
+    let videos: any = []
     
-    if (!query || query === 'undefined') return res.status(200).json({results})
+    if (!query || query === 'undefined') return res.status(200).json({videos})
     
     const client = new MongoClient(MONGO_URI)
-    results = await client
+    videos = await client
         .db('mongooseTv')
         .collection('videos')
         .aggregate([
@@ -56,7 +56,7 @@ route.get(async (req: any, res: any) => {
             },
         ]).toArray()
     
-    res.status(200).json({results})
+    res.status(200).json({videos})
 })
 
 export default route

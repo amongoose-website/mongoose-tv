@@ -18,7 +18,7 @@ const route = nc({
 })
 
 route.get(async (req: any, res: any) => {
-    let cache: string | null = await redis.get('allList')
+    let cache: string | null = await redis.get('allDvds')
 
     if (cache) {
         cache = JSON.parse(cache)
@@ -27,9 +27,11 @@ route.get(async (req: any, res: any) => {
 
     await dbConnect()
     
-    const documentaries = await Video.find({ isDvd: false })
-    const dvdsQuery = await Dvd.find().sort({ dvdNumber: 1 }).exec()
-    let dvds: Array<any> = [];
+    // const documentaries = await Video.find({ isDvd: false })
+    const dvdsQuery = await Dvd.find()
+        .sort({ dvdNumber: 1 })
+        .exec()
+    let result: Array<any> = [];
 
     for (let dvd of dvdsQuery) {
         let firstEpisode = (await Video.find({dvdNumber: dvd.dvdNumber})
@@ -38,15 +40,10 @@ route.get(async (req: any, res: any) => {
             .exec())[0]
         let episodeCount = await Video.count({ dvdNumber: dvd.dvdNumber })
 
-        dvds.push({...dvd._doc, firstEpisode, episodeCount});
+        result.push({...dvd._doc, firstEpisode, episodeCount});
     }
 
-    const result = {
-        dvds,
-        documentaries
-    }
-
-    redis.set('allList', JSON.stringify(result));
+    redis.set('allDvds', JSON.stringify(result));
     if (!cache) return res.status(200).json(result)
 })
 
