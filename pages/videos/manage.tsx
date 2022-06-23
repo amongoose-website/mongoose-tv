@@ -43,8 +43,8 @@ const Manage = () => {
 
     if (!data?.videos?.length) return <Loading/>
     
-    const deleteVideo = (video: any) => {
-        console.log(`Deleting, ${video.title}`)
+    const deleteVideo = async (video: any) => {
+        await axios.post('/api/videos/delete', video)
         setDeleting(null)
     }
 
