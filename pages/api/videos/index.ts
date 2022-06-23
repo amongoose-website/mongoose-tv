@@ -83,7 +83,7 @@ async function handleCustomQuery(req: any, res: any) {
 route.get(async (req: any, res: any) => {
     await dbConnect()
     // Handle Videos
-    if (req.query.v) return handleVideo(req, res)
+    if (req.query.v && !req.query.d) return handleVideo(req, res)
     
     // Handle DVDs    
     if (req.query.d && req.query.v) return handleDvd(req, res)
