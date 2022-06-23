@@ -16,7 +16,7 @@ const Home = () => {
       setDocumentaries(documentariesResults.data)
       setDvds(dvdsResults.data)
     }
-    if (documentaries.length < 1 || dvds.length < 1) getVideos();
+    if (dvds.length < 1) getVideos();
   })
 
   if (documentaries.length < 1 && dvds.length < 1) return <Loading/>
