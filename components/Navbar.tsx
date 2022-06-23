@@ -134,7 +134,7 @@ const Navbar = () => {
                         </div>
                         <SearchBar/>
                     </div>
-                    <ul className={`${menu === 'openMenu' ? '' : 'hidden'} flex flex-col items-center gap-2 mt-4 md:flex-row md:space-x-8 md:mt-0 md:text-sm md:font-medium`}>
+                    <ul className={`${menu === 'openMenu' ? 'flex' : 'hidden'} md:flex flex-col items-center gap-2 mt-4 md:flex-row md:space-x-8 md:mt-0 md:text-sm md:font-medium text-center`}>
                         {/* <MenuLink href='/upload' text='Upload'/> */}
                         {user && <>
                             <div className='md:hidden'>
