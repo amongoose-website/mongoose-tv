@@ -5,16 +5,18 @@ import { GetServerSideProps } from 'next'
 import Layout from '../components/Layout'
 import NotFound from '../components/NotFound'
 import VideoPlayer from '../components/VideoPlayer'
+import { ListThumbnail } from '../components/VideoThumbnail'
 
 const WatchPage = ({ query }: { query: any }) => {
-    if (!query.v && (!query.d || !query.e)) return <NotFound/>
-
-    // Check video exists
-    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const [list, setList] = useState<any>(null)
     const [video, setVideo] = useState<any>({})
-    // eslint-disable-next-line react-hooks/rules-of-hooks
     const [loaded, setLoaded] = useState(false)
-    
+    let index = Number(query.index) || 0
+
+    if (!query.v && !query.d) return <NotFound/>
+    // Check video exists
+    const { list: listId } = query
+
     // eslint-disable-next-line react-hooks/rules-of-hooks
     useEffect(() => {
         const getVideo = async () => {
@@ -26,13 +28,25 @@ const WatchPage = ({ query }: { query: any }) => {
             
             if (!loaded) setLoaded(true)
         }
-        getVideo()
+        const getList = async () => {
+            const { data } = await axios.get('/api/videos', {params: query})
+            if (data.episodes.length && data.episodes.length > 0) {
+                if(index +1 >= data.episodes.length || index + 1 <= 0) {
+                    // eslint-disable-next-line react-hooks/exhaustive-deps
+                    index = 0
+                }
+                setVideo(data.episodes[index])
+                setList(data)
+            }
+            if (!loaded) setLoaded(true)
+        }
+        if (!loaded) listId ? getList() : getVideo()
     })
 
     return (
         <Layout pageTitle={video.title}>
             <div className="container mx-auto bg-white rounded dark:bg-zinc-800 dark:text-white">
-                <div className='flex flex-col bg-black items-center rounded-t'>
+                <div className='flex flex-col bg-black items-center'>
                     {loaded && 
                         <>
                             {Object.keys(video).length > 0 && <VideoPlayer id={video.id}/>}
@@ -41,8 +55,23 @@ const WatchPage = ({ query }: { query: any }) => {
                     }
                 </div>
                 <div className='px-4 pb-20 mt-3'>
+                    { video.isDvd &&
+				    <div className='bg-zinc-200 dark:bg-zinc-700 w-min px-2.5 py-0.5 rounded text-xs my-1'>
+					    <span className=' whitespace-nowrap'>DVD • {video.dvdNumber}</span>
+					    <span className=' whitespace-nowrap ml-3'>Episode • {video.episodeNumber}</span>
+				    </div>
+				    }
                     <h1 className='text-xl font-medium mb-2'>{video.title}</h1>
                     <p className='text-sm font-base'>{video.description}</p>
+
+                    { list && 
+                        <div className='flex flex-col w-full mt-10 border md:w-1/2 max-h-96'>
+                            <h1 className='text-lg mt-2 mb-5 mx-4'>{`Playlist - ${list.title}`}</h1>
+                            {list?.episodes?.length > 0 && <div className='bg-zinc-50 overflow-scroll overscroll-contain'>
+                                { list?.episodes?.map((video: any, i: number) => <ListThumbnail key={i} index={i} video={video} listId={list.id} isCurrent={index === i}/>) }
+                            </div>}
+                        </div>
+                    }
                 </div>
             </div>
         </Layout>

@@ -17,11 +17,11 @@ export const DvdOverlay = ({count}: {count: string | number}) => {
 
 export const DvdThumbnail = (props: any) => {
 	const { dvd } = props
-	
+	const url = `/watch?v=${dvd.firstEpisode.id}&list=${dvd.id}&index=0`
 	return (
 		<div className='px-6 sm:px-20 md:px-10 lg:px-5 w-full'>
 		  <div className="w-full inline-block">
-			<a className='w-full' href={`/watch?v=${dvd.id}`}>
+			<a className='w-full' href={url}>
 			  <div className='relative aspect-video w-full h-auto rounded'>
 				{ dvd && <DvdOverlay count={dvd.episodeCount}/> }
 				<Image 
@@ -32,7 +32,7 @@ export const DvdThumbnail = (props: any) => {
 			  </div>
 			</a>
 			<div className="py-2">
-			  <a href={`/watch?v=${dvd.id}`}>
+			  <a href={url}>
 				{ dvd.isDvd &&
 				  <div className='bg-zinc-200 dark:bg-zinc-700 w-min px-2.5 py-0.5 rounded text-xs my-1'>
 					<span className=' whitespace-nowrap'>DVD • {dvd.dvdNumber}</span>
@@ -139,5 +139,32 @@ export const CarouselDvdThumbnail = (props: any) => {
 			</div>
 		  </div>
 		</div>
+	)   
+}
+
+export const ListThumbnail = (props: any) => {
+	const { video, listId, index, isCurrent } = props
+	const url = `/watch?v=${video.id}&list=${listId}&index=${index}`
+	return (
+		<a href={url} className='h-min box-content'>
+		<div className={`flex flex-row gap-2 ${isCurrent ? 'bg-zinc-200' : ''} hover:bg-zinc-200`}>
+			<div className="flex flex-col justify-center">
+				<Icon className={`text-zinc-600 dark:text-zinc-200 text-sm ${isCurrent ? 'visible': 'invisible'}`} name='play_arrow'/>
+			</div>
+			<div>
+				<Image 
+					layout='fixed'
+					width={100}
+					height={60}
+					src={`${appConfig.publicThumbnails}${video.id}.png`} 
+					alt="" />
+			</div>
+			<div className='overflow-hidden h-min'>
+				<h5 className="text-base font-medium tracking-tight text-zinc-900 dark:text-white max-h-12 overflow-hidden text-ellipsis">
+					{video.title}
+				</h5>
+			</div>
+		</div>
+		</a>
 	)   
 }

@@ -1,6 +1,7 @@
 import Redis from 'ioredis'
 import nc from 'next-connect'
 
+import Dvd from '../../../models/Dvd';
 import Video from '../../../models/Video';
 import dbConnect from '../../../lib/dbConnect';
 
@@ -44,7 +45,7 @@ const handleVideo = async (req: any, res: any) => {
             id: video.id,
             title: video.title,
             description: video.description,
-            isDvd: false,
+            isDvd: video.isDvd,
             dvdNumber: video.dvdNumber,
             episodeNumber: video.episodeNumber
         }
@@ -80,8 +81,47 @@ async function handleCustomQuery(req: any, res: any) {
     })
 }
 
+async function fetchList(req: any, res: any) {
+    const id = req.query.list
+
+    if (!process.env.REDIS_URL) return res.status(500).json('Redis URL not provided')
+    const redis = new Redis(process.env.REDIS_URL)
+    let cache: string | null = await redis.get(`dvd:${id}`)
+
+    if (cache) {
+        cache = JSON.parse(cache)
+        res.status(200).json(cache)
+    }
+
+    await dbConnect()
+
+    let dvdQuery: any = await Dvd.findOne({ id })
+    if (!dvdQuery && !cache) return res.status(404).json({message: `Dvd, ${id} does not exist`})
+    
+    let dvd = {
+        id: dvdQuery.id,
+        title: dvdQuery.title,
+        dvdNumber: dvdQuery.dvdNumber,
+        episodes: (await Video.find({ dvdNumber: dvdQuery.dvdNumber }).sort({ episodeNumber: 1 }))
+            .map((e: any) => ({
+                id: e.id,
+                title: e.title,
+                isDvd: true,
+                dvdNumber: e.dvdNumber,
+                episodeNumber: e.episodeNumber,
+                description: e.description,
+            }))
+    }
+    
+    redis.set(`dvd:${id}`, JSON.stringify(dvd))
+    if (!cache) return res.status(200).json(dvd)
+}
+
 route.get(async (req: any, res: any) => {
     await dbConnect()
+    // Handle lists
+    if (req.query.v && req.query.list) return fetchList(req, res)
+    
     // Handle Videos
     if (req.query.v && !req.query.d) return handleVideo(req, res)
     

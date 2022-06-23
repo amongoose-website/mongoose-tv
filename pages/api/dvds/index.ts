@@ -17,7 +17,7 @@ const route = nc({
 
 route.get(async (req: any, res: any) => {
     if (!process.env.REDIS_URL) return res.status(500).json('Redis URL not provided')
-    const redis = new Redis(process.env.REDIS_URL);
+    const redis = new Redis(process.env.REDIS_URL)
     let cache: string | null = await redis.get('allDvds')
 
     if (cache) {
@@ -31,7 +31,7 @@ route.get(async (req: any, res: any) => {
     const dvdsQuery = await Dvd.find()
         .sort({ dvdNumber: 1 })
         .exec()
-    let result: Array<any> = [];
+    let result: Array<any> = []
 
     for (let dvd of dvdsQuery) {
         let firstEpisode = (await Video.find({dvdNumber: dvd.dvdNumber})
@@ -40,10 +40,10 @@ route.get(async (req: any, res: any) => {
             .exec())[0]
         let episodeCount = await Video.count({ dvdNumber: dvd.dvdNumber })
 
-        result.push({...dvd._doc, firstEpisode, episodeCount});
+        result.push({...dvd._doc, firstEpisode, episodeCount})
     }
 
-    redis.set('allDvds', JSON.stringify(result));
+    redis.set('allDvds', JSON.stringify(result))
     if (!cache) return res.status(200).json(result)
 })
 
