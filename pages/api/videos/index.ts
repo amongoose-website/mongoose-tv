@@ -17,7 +17,7 @@ const route = nc({
 const handleDvd = async (req: any, res: any) => {
     const video = await Video.findOne({
         dvdNumber: req.query.d,
-        episodeNumber: req.query.e
+        episodeNumber: req.query.v
     })
     
     if (!video) return res.status(404).json({error: 'DVD not found'})
@@ -86,7 +86,7 @@ route.get(async (req: any, res: any) => {
     if (req.query.v) return handleVideo(req, res)
     
     // Handle DVDs    
-    if (req.query.d && req.query.e) return handleDvd(req, res)
+    if (req.query.d && req.query.v) return handleDvd(req, res)
 
     // Handle custom query
     if (req.query.limit || req.query.skip) return handleCustomQuery(req, res)
