@@ -14,7 +14,7 @@ const thumbler = require('../lib/thumbler');
 const PlaylistModel = require('./lib/PlaylistModel');
 const VideoModel = require('./lib/VideoModel');
 
-const original = '/Users/jooshhg/Desktop/playlists';
+const originalVideos = '/home/webadmin/playlists';
 const videosLocation = '/media/webadmin/media/videos/';
 const thumbnailsLocation = '/media/webadmin/media/thumbnails/';
 
@@ -74,7 +74,7 @@ async function saveDvds() {
     // Initialise DB
     await mongoose.connect(process.env.MONGO_URI);
 
-    const playlists = Playlist.loadPlaylists(original);
+    const playlists = Playlist.loadPlaylists(originalVideos);
     total = playlists.map(playlist => playlist.videos.length)
         .reduce(function(a, b) { return a + b; }, 0);
 
