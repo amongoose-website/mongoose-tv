@@ -52,6 +52,34 @@ export const DvdThumbnail = (props: any) => {
 	)   
 }
 
+export const PlaylistThumbnail = (props: any) => {
+	const { playlist } = props
+	const url = `/watch?v=${playlist.firstEpisode.id}&list=${playlist.id}&index=0`
+	return (
+		<div className='px-6 sm:px-20 md:px-10 lg:px-5 w-full'>
+		  <div className="w-full inline-block">
+			<a className='w-full' href={url}>
+			  <div className='relative aspect-video w-full h-auto rounded'>
+				{ playlist && <DvdOverlay count={playlist.episodeCount}/> }
+				<Image 
+				  layout='fill'
+				  className='rounded'
+				  src={`${appConfig.publicThumbnails}${playlist.firstEpisode.id}.png`} 
+				  alt="" />
+			  </div>
+			</a>
+			<div className="py-2">
+			  <a href={url}>
+				<h5 className="text-base font-medium tracking-tight text-zinc-900 dark:text-white">
+				  {playlist.title}
+				</h5>
+			  </a>
+			</div>
+		  </div>
+		</div>
+	)   
+}
+
 const VideoThumbnail = (props: any) => {
 	const { video } = props
 	return (

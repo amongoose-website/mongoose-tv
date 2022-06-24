@@ -15,13 +15,12 @@ const WatchPage = ({ query }: { query: any }) => {
 
     if (!query.v && !query.d) return <NotFound/>
     // Check video exists
-    const { list: listId } = query
+    const { list: listId, dvdList } = query
 
     // eslint-disable-next-line react-hooks/rules-of-hooks
     useEffect(() => {
         const getVideo = async () => {
             const { data } = await axios.get('/api/videos', {params: query})
-
             if (data.video && Object.keys(video).length <= 0) {
                 setVideo(data.video)
             }
@@ -30,17 +29,19 @@ const WatchPage = ({ query }: { query: any }) => {
         }
         const getList = async () => {
             const { data } = await axios.get('/api/videos', {params: query})
-            if (data.episodes.length && data.episodes.length > 0) {
-                if(index +1 >= data.episodes.length || index + 1 <= 0) {
+            console.log(data)
+            if (data.videos.length && data.videos.length > 0) {
+                if(index +1 >= data.videos.length || index + 1 <= 0) {
                     // eslint-disable-next-line react-hooks/exhaustive-deps
                     index = 0
                 }
-                setVideo(data.episodes[index])
+                setVideo(data.videos[index])
                 setList(data)
             }
             if (!loaded) setLoaded(true)
         }
-        if (!loaded) listId ? getList() : getVideo()
+        if (!loaded) listId || dvdList ? getList() : getVideo()
+
     })
 
     return (
@@ -67,8 +68,8 @@ const WatchPage = ({ query }: { query: any }) => {
                     { list && 
                         <div className='flex flex-col w-full mt-10 border md:w-1/2 max-h-96'>
                             <h1 className='text-lg mt-2 mb-5 mx-4'>{`Playlist - ${list.title}`}</h1>
-                            {list?.episodes?.length > 0 && <div className='bg-zinc-50 overflow-scroll overscroll-contain'>
-                                { list?.episodes?.map((video: any, i: number) => <ListThumbnail key={i} index={i} video={video} listId={list.id} isCurrent={index === i}/>) }
+                            {list?.videos?.length > 0 && <div className='bg-zinc-50 overflow-scroll overscroll-contain'>
+                                { list?.videos?.map((video: any, i: number) => <ListThumbnail key={i} index={i} video={video} listId={list.id} isCurrent={index === i}/>) }
                             </div>}
                         </div>
                     }

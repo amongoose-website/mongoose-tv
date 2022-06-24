@@ -4,6 +4,7 @@ import nc from 'next-connect'
 import Dvd from '../../../models/Dvd';
 import Video from '../../../models/Video';
 import dbConnect from '../../../lib/dbConnect';
+import Playlist from '../../../models/Playlist';
 
 const route = nc({
     onError(error, _, res: any) {
@@ -81,9 +82,8 @@ async function handleCustomQuery(req: any, res: any) {
     })
 }
 
-async function fetchList(req: any, res: any) {
+async function fetchDvdList(req: any, res: any) {
     const id = req.query.list
-
     if (!process.env.REDIS_URL) return res.status(500).json('Redis URL not provided')
     const redis = new Redis(process.env.REDIS_URL)
     let cache: string | null = await redis.get(`dvd:${id}`)
@@ -102,7 +102,7 @@ async function fetchList(req: any, res: any) {
         id: dvdQuery.id,
         title: dvdQuery.title,
         dvdNumber: dvdQuery.dvdNumber,
-        episodes: (await Video.find({ dvdNumber: dvdQuery.dvdNumber }).sort({ episodeNumber: 1 }))
+        videos: (await Video.find({ dvdNumber: dvdQuery.dvdNumber }).sort({ episodeNumber: 1 }))
             .map((e: any) => ({
                 id: e.id,
                 title: e.title,
@@ -117,10 +117,56 @@ async function fetchList(req: any, res: any) {
     if (!cache) return res.status(200).json(dvd)
 }
 
+async function fetchPlaylist(req: any, res: any) {
+    const id = req.query.list
+    if (!process.env.REDIS_URL) return res.status(500).json('Redis URL not provided')
+    const redis = new Redis(process.env.REDIS_URL)
+    let cache: string | null = await redis.get(`playlist:${id}`)
+
+    if (cache) {
+        cache = JSON.parse(cache)
+        res.status(200).json(cache)
+    }
+
+    await dbConnect()
+
+    let playlistQuery: any = await Playlist.findOne({ id })
+    if (!playlistQuery && !cache) return res.status(404).json({message: `Playlist, ${id} does not exist`})
+    
+    let playlist = {
+        id: playlistQuery.id,
+        title: playlistQuery.title,
+        videos: (await Promise.all(playlistQuery.videos.map(({id}: {id: string}) => {
+            return new Promise(async (res) => {
+                const e: any = await Video.findOne({ id })
+                return res({
+                    id: e.id,
+                    title: e.title,
+                    isDvd: false,
+                    dvdNumber: e.dvdNumber,
+                    episodeNumber: e.episodeNumber,
+                    description: e.description,
+                })
+            })
+        })))
+    }
+    
+    redis.set(`playlist:${id}`, JSON.stringify(playlist))
+    if (!cache) return res.status(200).json(playlist)
+}
+
+async function determineList(req: any, res: any) {
+    const isDvd = (await Dvd.exists({ id: req.query.list })) !== null
+
+    if (isDvd) return fetchDvdList(req, res);
+
+    return fetchPlaylist(req, res);
+}
+
 route.get(async (req: any, res: any) => {
     await dbConnect()
     // Handle lists
-    if (req.query.v && req.query.list) return fetchList(req, res)
+    if (req.query.v && req.query.list) return determineList(req, res)
     
     // Handle Videos
     if (req.query.v && !req.query.d) return handleVideo(req, res)
