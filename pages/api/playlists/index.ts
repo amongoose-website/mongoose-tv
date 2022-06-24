@@ -29,7 +29,7 @@ route.get(async (req: any, res: any) => {
     
     // const documentaries = await Video.find({ isDvd: false })
     const playlistsQuery = await Playlist.find()
-        .sort({ index: 1 })
+        .sort({ createdAt: 1 })
         .exec()
     let result: Array<any> = []
 
@@ -39,7 +39,6 @@ route.get(async (req: any, res: any) => {
             .sort({ episodeNumber: 1 })
             .limit(1)
             .exec())[0]
-        console.log(firstEpisode)
 
         result.push({...playlist._doc, firstEpisode, episodeCount: playlist.videos.length})
     }
