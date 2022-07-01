@@ -175,7 +175,7 @@ export const ListThumbnail = (props: any) => {
 	const url = `/watch?v=${video.id}&list=${listId}&index=${index}`
 	return (
 		<a href={url} className='h-min box-content'>
-		<div className={`flex flex-row gap-2 ${isCurrent ? 'bg-zinc-200' : ''} hover:bg-zinc-200`}>
+		<div className={`flex flex-row gap-2 ${isCurrent ? 'bg-zinc-200 dark:bg-zinc-700' : 'dark:bg-zinc-800'} hover:bg-zinc-200 dark:hover:bg-zinc-700`}>
 			<div className="flex flex-col justify-center">
 				<Icon className={`text-zinc-600 dark:text-zinc-200 text-sm ${isCurrent ? 'visible': 'invisible'}`} name='play_arrow'/>
 			</div>
