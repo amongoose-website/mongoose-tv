@@ -2,6 +2,8 @@
 
 ## Author: Joshua Grimmett
 
+<img width="1384" alt="image" src="https://user-images.githubusercontent.com/22614349/185803090-85cc116f-2e6e-4c3a-8481-194eea052343.png">
+
 This project began with a stack of physical DVDs. Tony, the founder, editor and publisher of A. Mongoose, would send out physical copies of the books, charts and DVDs. However this put a limit on the distribution of these resources and put a heavy work load on Tony to continue distributing the resources for free. 
 
 Tony and I have worked together, building a free service to distribute DVDs, books, charts as well as frequent blog posts. To better understand the content visit [Amongoose.com](https://amongoose.com/) where the books, charts and blog posts are hosted. The videos component of the website ([Mongoose Tv](https://tv.amongoose.com)) provides over 700 documentaries.
