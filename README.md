@@ -13,3 +13,4 @@ Development software used on Mongoose.Tv:
 - MongoDB & Mongoose
 - Redis
 - Tailwindcss
+- Nginx
