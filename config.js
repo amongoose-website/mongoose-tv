@@ -10,6 +10,8 @@ let config = {
     navbarItems: [
         {text: 'Upload', href: '/videos/upload', icon: 'file_upload', type: 'link'},
         {text: 'Manage Videos', href: '/videos/manage?page=1', icon: 'video_library', type: 'link'},
+        {text: 'Manage DVDs', href: '/dvds/manage?page=1', icon: 'album', type: 'link'},
+        {text: 'Manage Playlists', href: '/playlists/manage?page=1', icon: 'album', type: 'link'},
         {text: 'Logout', href: '/api/auth/logout', icon: 'logout', type: 'a'},
     ]
 }

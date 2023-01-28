@@ -27,8 +27,10 @@ const Home = () => {
         <div className="grid xs:grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 justify-items-center ">
           
           {playlists.length > 0 && <>
-            <h1 className='px-6 sm:px-20 md:px-10 lg:px-5 text-3xl pb-2 col-span-full w-full mx-auto'>All Documentaries</h1>
-            { playlists.map((playlist: any, i: number) => <PlaylistThumbnail key={i} playlist={playlist}/>) }
+            <h1 className="px-6 sm:px-20 md:px-10 lg:px-5 text-3xl pb-2 col-span-full w-full mx-auto">All Documentaries</h1>
+            { playlists.map((playlist: any, i: number) => {
+              <PlaylistThumbnail key={i} playlist={playlist}/>
+            }) }
           </>}
           
           

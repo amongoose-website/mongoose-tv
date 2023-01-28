@@ -20,7 +20,7 @@ const handleDvd = async (req: any, res: any) => {
     const video = await Video.findOne({
         dvdNumber: req.query.d,
         episodeNumber: req.query.v
-    })
+    });
     
     if (!video) return res.status(404).json({error: 'DVD not found'})
     return res.status(200).json({
